@@ -1,232 +1,196 @@
-/* styles/globals.css */
-.body {
-  background-color: skyblue;
-}
-.container {
-  padding: 2rem;
-  font-family: sans-serif;
-  background-color: #f7f7f7;
-  min-height: 100vh;
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #e0f0ff; /* light blue */
 }
 
-.header {
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .logo {
-  width: 50px;
-}
-
-.walletInfo {
-  font-size: 0.9rem;
-  color: #333;
-  background: #e1f5fe;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-
-.main {
-  margin-top: 2rem;
-  text-align: center;
+  width: 60px;
+  height: 60px;
 }
 
 .title {
   font-size: 2.5rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  color: #003366;
 }
 
-.description {
-  margin: 1rem auto;
-  max-width: 600px;
-  color: #555;
-  line-height: 1.6;
+.description p {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 2rem;
 }
 
-.buttonGroup {
+.buttons {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 1.5rem;
 }
 
 .btn {
+  background-color: #003366;
+  color: white;
+  text-decoration: none;
   padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  cursor: pointer;
   border-radius: 6px;
-  transition: background-color 0.3s ease;
-}
-
-.landownerBtn {
-  background-color: #4caf50;
-  color: white;
-}
-
-.adminBtn {
-  background-color: #2196f3;
-  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s;
 }
 
 .btn:hover {
-  opacity: 0.85;
+  background-color: #0059b3;
 }
-.container {
-  padding: 2rem;
-  font-family: sans-serif;
-}
-
-.header {
+.admin-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
+  gap: 15px;
+  padding: 1rem;
+  background-color: #003366;
+  color: white;
 }
 
-.logo {
-  width: 50px;
+
+.form-section, .table-section {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
 }
 
-.walletInfo {
-  font-size: 0.9rem;
-  color: #333;
-  background: #f0f0f0;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-
-.main {
-  text-align: center;
-}
-
-.btn {
-  padding: 0.6rem 1.2rem;
-  margin: 0.5rem;
-  font-size: 1rem;
-  border: none;
-  cursor: pointer;
+form input, form select, form textarea {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
   border-radius: 6px;
 }
 
-.connectBtn {
-  background-color: #673ab7;
-  color: white;
-}
-
-.refreshBtn {
-  background-color: #2196f3;
-  color: white;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.table th, .table td {
-  border: 1px solid #ddd;
-  padding: 0.75rem;
-}
-
-.table th {
-  background-color: #f2f2f2;
-}
-
-.nftImage {
-  width: 60px;
-  height: auto;
-  border-radius: 4px;
-}
-.admin-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-family: Arial, sans-serif;
-}
-
-.admin-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.admin-header h1 {
-  color: #004080;
-  font-size: 24px;
-}
-
-.connect-btn {
-  padding: 8px 16px;
-  background-color: #004080;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.mint-form {
-  background-color: #e6f2ff;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-}
-
-.mint-form h2 {
-  margin-bottom: 1rem;
-  color: #003366;
-}
-
-.mint-form input {
-  display: block;
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.mint-btn {
-  background-color: #0073e6;
+form button {
+  background-color: #003366;
   color: white;
   padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-.minted-table h2 {
-  color: #003366;
-  margin-bottom: 10px;
+form button:hover {
+  background-color: #005599;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
 }
 
-th {
-  background-color: #004080;
+table th {
+  background-color: #003366;
   color: white;
-  padding: 8px;
+  padding: 10px;
+}
+
+table td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.approve {
+  background-color: green;
+  color: white;
+  margin-right: 5px;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.reject {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.resident-container {
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+  background-color: #f4f8fc;
+  min-height: 100vh;
+}
+
+.resident-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.resident-logo {
+  height: 60px;
+}
+
+.resident-header h1 {
+  color: #064663;
+  font-size: 2rem;
+}
+
+.resident-section {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.resident-section h2 {
+  color: #064663;
+  margin-bottom: 15px;
+}
+
+.refresh-btn {
+  margin-bottom: 15px;
+  background-color: #064663;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.proposal-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.proposal-table th {
+  background-color: #064663;
+  color: white;
+  padding: 12px;
   text-align: left;
 }
 
-td {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
+.proposal-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ccc;
 }
 
-tr:nth-child(even) {
-  background-color: #f2f9ff;
+.proposal-table tr:nth-child(even) {
+  background-color: #eaf3fb;
 }
 
-a {
-  color: #0073e6;
+.proposal-table tr:hover {
+  background-color: #d2e8f6;
 }

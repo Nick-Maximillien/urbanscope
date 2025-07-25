@@ -1,169 +1,486 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import {
-  BrowserProvider,
-  JsonRpcProvider,
-  Contract,
-  isAddress
-} from 'ethers';
-import contractABI from '../../utils/contractABI.json';
+import { useState, useEffect, useCallback } from "react";
+import { ethers } from "ethers";
+import Image from "next/image";
 
-const INFURA_PROJECT_ID = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID;
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+const INFURA_PROJECT_ID = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID;
 
-export default function Admin() {
-  const [currentAccount, setCurrentAccount] = useState('');
-  const [landInputs, setLandInputs] = useState({
-    to: '',
-    metadataURI: '',
-    titleId: '',
-    location: '',
-    size: '',
+const CONTRACT_ABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "approveChange",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "parcelID",
+				"type": "string"
+			}
+		],
+		"name": "ProposalApproved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "parcelID",
+				"type": "string"
+			}
+		],
+		"name": "ProposalRejected",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "parcelID",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "submittedBy",
+				"type": "address"
+			}
+		],
+		"name": "ProposalSubmitted",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_parcelID",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_proposedUse",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_description",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_locationURI",
+				"type": "string"
+			}
+		],
+		"name": "proposeChange",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "rejectChange",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "changes",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "parcelID",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "proposedUse",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "locationURI",
+				"type": "string"
+			},
+			{
+				"internalType": "enum LandUseNotification.Status",
+				"name": "status",
+				"type": "uint8"
+			},
+			{
+				"internalType": "address",
+				"name": "submittedBy",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "cityHall",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "getChange",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "parcelID",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "proposedUse",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "locationURI",
+				"type": "string"
+			},
+			{
+				"internalType": "enum LandUseNotification.Status",
+				"name": "status",
+				"type": "uint8"
+			},
+			{
+				"internalType": "address",
+				"name": "submittedBy",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getTotalChanges",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
+
+export default function AdminPage() {
+  const [form, setForm] = useState({
+    title: "",
+    developer: "",
+    location: "",
+    parcelId: "",
+    devType: "",
+    description: "",
+    docUrl: "",
   });
-  const [mintedLands, setMintedLands] = useState([]);
+  const [proposals, setProposals] = useState([]);
+  const [contract, setContract] = useState(null);
 
-  const infuraProvider = new JsonRpcProvider(
-    `https://sepolia.infura.io/v3/${INFURA_PROJECT_ID}`
-  );
+  const connectWallet = useCallback(async () => {
+    try {
+      if (!window.ethereum) return alert("MetaMask not detected");
 
-  // Auto-connect wallet
-  useEffect(() => {
-    const checkConnection = async () => {
-      if (typeof window.ethereum !== 'undefined') {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-          if (accounts.length > 0) {
-            setCurrentAccount(accounts[0]);
-          }
-        } catch (err) {
-          console.error('Wallet check failed:', err);
-        }
-      }
-    };
-    checkConnection();
+      const browserProvider = new ethers.BrowserProvider(window.ethereum);
+      await browserProvider.send("eth_requestAccounts", []);
+      const signer = await browserProvider.getSigner();
+
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      setContract(contract);
+    } catch (err) {
+      console.error("Wallet connection error:", err);
+      alert("Failed to connect wallet.");
+    }
   }, []);
 
-  const connectWallet = async () => {
-    try {
-      if (!window.ethereum) return alert('🛑 MetaMask not detected');
-
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      if (accounts.length === 0) {
-        alert('❌ No wallet connected');
-        return;
-      }
-
-      setCurrentAccount(accounts[0]);
-    } catch (error) {
-      console.error('Wallet connection error:', error);
-      alert('❌ Failed to connect wallet. See console.');
-    }
-  };
-
   const handleChange = (e) => {
-    setLandInputs({ ...landInputs, [e.target.name]: e.target.value });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const mintLand = async () => {
-    const { to, metadataURI, titleId, location, size } = landInputs;
-
-    if (!currentAccount) return alert('🔌 Connect your wallet first');
-    if (!isAddress(to)) return alert('❌ Invalid wallet address');
-    if (!metadataURI || !titleId || !location || !size)
-      return alert('❌ Fill all fields');
+  const submitProposal = async (e) => {
+    e.preventDefault();
+    if (!contract) return alert("Wallet not connected");
 
     try {
-      const provider = new BrowserProvider(window.ethereum);
-      await provider.send('eth_requestAccounts', []);
-      const signer = await provider.getSigner();
-
-      const contract = new Contract(CONTRACT_ADDRESS, contractABI, signer);
-
-      console.log('📤 Sending transaction...');
-      const tx = await contract.mintLand(to, metadataURI, titleId, location, size);
+      const tx = await contract.proposeChange(
+        form.parcelId,
+        form.devType,
+        form.description,
+        form.docUrl
+      );
       await tx.wait();
-
-      console.log('✅ Minted:', tx.hash);
-      alert('✅ Land NFT minted!');
-      fetchAllLands();
-    } catch (error) {
-      console.error('❌ Mint failed:', error);
-
-      if (error?.reason) {
-        alert(`⚠️ Contract error: ${error.reason}`);
-      } else if (error?.code === 'INVALID_ARGUMENT') {
-        alert('🛑 Invalid input to contract.');
-      } else if (error?.message?.includes('execution reverted')) {
-        alert('⛔ Transaction reverted by contract.');
-      } else {
-        alert('❌ Unknown error occurred. Check console.');
-      }
+      setForm({
+        title: "",
+        developer: "",
+        location: "",
+        parcelId: "",
+        devType: "",
+        description: "",
+        docUrl: "",
+      });
+      fetchProposals();
+    } catch (err) {
+      console.error("Submission error:", err);
+      alert("Error submitting proposal");
     }
   };
 
-  const fetchAllLands = async () => {
-    setMintedLands((prev) => [
-      ...prev,
-      {
-        id: prev.length,
-        ...landInputs,
-      },
-    ]);
+  const fetchProposals = useCallback(async () => {
+    if (!contract) return;
+
+    try {
+      const total = await contract.getTotalChanges();
+      const fetched = [];
+
+      for (let i = 0; i < total; i++) {
+        const [
+          parcelID,
+          proposedUse,
+          description,
+          locationURI,
+          statusEnum,
+          submittedBy,
+          timestamp,
+        ] = await contract.getChange(i);
+
+        fetched.push({
+          id: i,
+          parcelID,
+          proposedUse,
+          description,
+          locationURI,
+          status:
+            Number(statusEnum) === 0
+              ? "Pending"
+              : Number(statusEnum) === 1
+              ? "Approved"
+              : "Rejected",
+          submittedBy,
+          timestamp: new Date(Number(timestamp) * 1000).toLocaleString(),
+        });
+      }
+
+      setProposals(fetched);
+    } catch (err) {
+      console.error("Error fetching proposals", err);
+    }
+  }, [contract]);
+
+  const updateStatus = async (id, status) => {
+    if (!contract) return;
+
+    try {
+      const tx =
+        status === "Approved"
+          ? await contract.approveChange(id)
+          : await contract.rejectChange(id);
+      await tx.wait();
+      fetchProposals();
+    } catch (err) {
+      console.error("Status update failed:", err);
+    }
   };
+
+  useEffect(() => {
+    connectWallet();
+  }, [connectWallet]);
+
+  useEffect(() => {
+    if (contract) fetchProposals();
+  }, [contract, fetchProposals]);
 
   return (
-    <div className="admin-container">
-      <header className="admin-header">
-        <h1>ArdhiChain Admin Panel</h1>
-        <button className="connect-btn" onClick={connectWallet}>
-          {currentAccount
-            ? `Connected: ${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}`
-            : 'Connect Wallet'}
-        </button>
+    <main className="p-6 max-w-4xl mx-auto font-sans">
+      <header className="flex items-center gap-4 mb-8">
+        <Image
+          src="/images/logo.jpeg"
+          alt="UrbanScope Logo"
+          width={48}
+          height={48}
+          className="rounded"
+        />
+        <h1 className="text-3xl font-bold text-blue-800">UrbanScope Admin Dashboard</h1>
       </header>
 
-      <section className="mint-form">
-        <h2>Mint New Land NFT</h2>
-        <input name="to" placeholder="Owner Wallet Address" onChange={handleChange} />
-        <input name="metadataURI" placeholder="Token URI (IPFS link)" onChange={handleChange} />
-        <input name="titleId" placeholder="Title ID" onChange={handleChange} />
-        <input name="location" placeholder="Location" onChange={handleChange} />
-        <input name="size" placeholder="Size (e.g. 50x100)" onChange={handleChange} />
-        <button className="mint-btn" onClick={mintLand}>Mint Land</button>
+      <section className="mb-12 bg-white p-6 rounded-lg shadow">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Submit New Development Proposal</h2>
+        <form onSubmit={submitProposal} className="grid gap-4">
+          {["title", "developer", "location", "parcelId", "docUrl"].map((field) => (
+            <input
+              key={field}
+              type="text"
+              name={field}
+              value={form[field]}
+              onChange={handleChange}
+              placeholder={field === "docUrl" ? "Document URL (IPFS or Web)" : field.replace(/([A-Z])/g, " $1")}
+              className="border border-gray-300 p-2 rounded"
+              required
+            />
+          ))}
+          <select
+            name="devType"
+            value={form.devType}
+            onChange={handleChange}
+            className="border border-gray-300 p-2 rounded"
+            required
+          >
+            <option value="">-- Select Development Type --</option>
+            <option value="Residential">Residential</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Mixed">Mixed Use</option>
+          </select>
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            rows="4"
+            placeholder="Project Description"
+            className="border border-gray-300 p-2 rounded"
+            required
+          />
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          >
+            Submit Proposal
+          </button>
+        </form>
       </section>
 
-      <section className="minted-table">
-        <h2>Minted Lands</h2>
-        {mintedLands.length === 0 ? (
-          <p>No lands minted yet.</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Title ID</th>
-                <th>Location</th>
-                <th>Size</th>
-                <th>Token URI</th>
-                <th>Owner</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mintedLands.map((land, index) => (
-                <tr key={index}>
-                  <td>{land.titleId}</td>
-                  <td>{land.location}</td>
-                  <td>{land.size}</td>
-                  <td>
-                    <a href={land.metadataURI} target="_blank" rel="noopener noreferrer">View</a>
+      <section className="bg-white p-6 rounded-lg shadow">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Submitted Proposals</h2>
+        <table className="w-full border border-collapse text-sm">
+          <thead className="bg-blue-800 text-white">
+            <tr>
+              <th className="p-2 border">ID</th>
+              <th className="p-2 border">Parcel</th>
+              <th className="p-2 border">Use</th>
+              <th className="p-2 border">Status</th>
+              <th className="p-2 border">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {proposals.length === 0 ? (
+              <tr><td colSpan="5" className="text-center py-4">No proposals yet</td></tr>
+            ) : (
+              proposals.map((p) => (
+                <tr key={p.id} className="odd:bg-gray-50">
+                  <td className="border p-2">{p.id}</td>
+                  <td className="border p-2">{p.parcelID}</td>
+                  <td className="border p-2">{p.proposedUse}</td>
+                  <td className="border p-2">{p.status}</td>
+                  <td className="border p-2 space-x-2">
+                    <button
+                      onClick={() => updateStatus(p.id, "Approved")}
+                      className="text-green-600 hover:underline"
+                    >
+                      ✔ Approve
+                    </button>
+                    <button
+                      onClick={() => updateStatus(p.id, "Rejected")}
+                      className="text-red-600 hover:underline"
+                    >
+                      ✖ Reject
+                    </button>
                   </td>
-                  <td>{land.to}</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              ))
+            )}
+          </tbody>
+        </table>
       </section>
-    </div>
+    </main>
   );
 }

@@ -1,49 +1,29 @@
-'use client';
+import Image from 'next/image';
+import Link from 'next/link';
 
-import Head from 'next/head';
-import { useRouter } from 'next/navigation'; // For Next.js App Router
-
-export default function HomePage() {
-  const router = useRouter();
-
-  const handleLandownerClick = () => {
-    router.push('/landowner');
-  };
-
-  const handleAdminClick = () => {
-    router.push('/admin'); // Update to match your admin route if different
-  };
-
+export default function Home() {
   return (
-    <>
-      <Head>
-        <title>ArdhiChain</title>
-      </Head>
+    <div className="container">
+      <header>
+        <Image src="/images/logo.jpeg" alt="UrbanScope Logo" width={80} height={80} className="logo" />
+        <h1 className="title">UrbanScope</h1>
+      </header>
 
-      <div className="container">
-        <header className="header">
-          <img src="/images/logo.png" alt="ArdhiChain Logo" className="logo" />
-          <div className="walletInfo">Wallet: 0x123...456</div>
-        </header>
+      <section className="description">
+        <p>
+          UrbanScope is a blockchain-powered land use notification system that brings transparency to urban development. 
+          Residents can view development proposals in their area, while the city hall admin securely submits updates on-chain.
+        </p>
+      </section>
 
-        <main className="main">
-          <h1 className="title">ArdhiChain</h1>
-          <p className="description">
-            ArdhiChain is a blockchain-powered land registry system enabling secure, transparent,
-            and verifiable land ownership through NFTs. It empowers landowners and provides
-            seamless oversight for administrators. Built for trust, built on-chain.
-          </p>
-
-          <div className="buttonGroup">
-            <button className="btn landownerBtn" onClick={handleLandownerClick}>
-              Landowner Dashboard
-            </button>
-            <button className="btn adminBtn" onClick={handleAdminClick}>
-              Admin Panel
-            </button>
-          </div>
-        </main>
-      </div>
-    </>
+      <section className="buttons">
+        <Link href="/admin">
+          <button className="btn">Admin Dashboard</button>
+        </Link>
+        <Link href="/resident">
+          <button className="btn">Resident Dashboard</button>
+        </Link>
+      </section>
+    </div>
   );
 }
